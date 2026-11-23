@@ -8,8 +8,8 @@
   padding: 0 7px;
   border: 2px solid var(--bus__stoppestedborder);
   border-radius: 12px;
-  background: var(--accent__primary);
-  color: #fff;
+  background: var(--route__yellow);
+  color: var(--route__onyellow);
   box-shadow: 0 3px 10px rgb(0 0 0 / 25%);
   font-size: 12px;
   font-weight: 800;
@@ -18,13 +18,12 @@
   transform: translate(-50%, -50%);
 }
 
+.blue {
+  background: var(--route__blue);
+  color: var(--route__onblue);
+}
+
 .busMarker:focus-visible {
   outline: 3px solid var(--text__primary);
   outline-offset: 3px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .busMarker {
-    transition: none;
-  }
 }

@@ -59,6 +59,7 @@ export default function GoogleMap({ userLocation }) {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState("");
   const [selectedStop, setSelectedStop] = useState(null);
+  const [selectedTrip, setSelectedTrip] = useState(null);
   const [favorites, setFavorites] = useState(getFavorites);
   const favoritesRef = useRef(favorites);
   const [showAllStops, setShowAllStops] = useState(false);
@@ -538,6 +539,8 @@ export default function GoogleMap({ userLocation }) {
         <StationModal
           key={selectedStop.stop_id}
           selectedStop={selectedStop}
+          selectedTrip={selectedTrip}
+          setSelectedTrip={setSelectedTrip}
           onClose={() => setSelectedStop(null)}
         />
       )}

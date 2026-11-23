@@ -13,7 +13,12 @@ import {
   removeFavorite,
 } from "../services/favorites.js";
 
-export default function StationModal({ selectedStop, onClose }) {
+export default function StationModal({
+  selectedStop,
+  selectedTrip,
+  setSelectedTrip,
+  onClose,
+}) {
   const tripListRef = useRef(null);
   const [favorite, setFavorite] = useState(() =>
     isFavorite(selectedStop.stop_id),
@@ -21,7 +26,6 @@ export default function StationModal({ selectedStop, onClose }) {
   const [departures, setDepartures] = useState([]);
   const [departuresLoading, setDeparturesLoading] = useState(true);
   const [departuresError, setDeparturesError] = useState("");
-  const [selectedTrip, setSelectedTrip] = useState(null);
   const [tripStops, setTripStops] = useState([]);
   const [tripLoading, setTripLoading] = useState(false);
   const [tripError, setTripError] = useState("");

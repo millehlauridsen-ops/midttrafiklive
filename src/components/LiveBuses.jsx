@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { getSimulatedBuses } from "../services/liveBuses.js";
 import styles from "./LiveBuses.module.css";
+import busWithWheels from "../assets/busmedhjul.svg";
 
 // Markører lever uden for Reacts DOM, fordi Google Maps styrer overlay-laget.
 export default function LiveBuses({ map, onSelectBus, refreshVersion }) {
@@ -25,8 +26,16 @@ export default function LiveBuses({ map, onSelectBus, refreshVersion }) {
         this.element = document.createElement("button");
         this.element.type = "button";
         this.element.className = styles.busMarker;
+        this.art = document.createElement("span");
+        this.art.className = styles.busArt;
+        const image = document.createElement("img");
+        image.src = busWithWheels;
+        image.alt = "";
+        image.draggable = false;
+        this.art.append(image);
         this.label = document.createElement("span");
-        this.element.append(this.label);
+        this.label.className = styles.routeNumber;
+        this.element.append(this.art, this.label);
         this.element.addEventListener("click", () => onSelectRef.current(this.bus));
         this.update(bus);
       }
@@ -51,6 +60,16 @@ export default function LiveBuses({ map, onSelectBus, refreshVersion }) {
       }
 
       update(bus) {
+        // SVG'ens front peger mod venstre. Spejlvend kun ved østlig kørsel.
+        const oldLongitude = Number(this.bus?.longitude);
+        const newLongitude = Number(bus.longitude);
+        if (Number.isFinite(oldLongitude) && Number.isFinite(newLongitude)) {
+          const movement = newLongitude - oldLongitude;
+          if (Math.abs(movement) > 0.000005) {
+            this.element.classList.toggle(styles.facingRight, movement > 0);
+          }
+        }
+
         this.bus = bus;
         this.label.textContent = bus.route_short_name || "?";
         this.element.classList.toggle(styles.blue, /^\d{3}$/.test(bus.route_short_name ?? ""));
@@ -111,7 +130,7 @@ export default function LiveBuses({ map, onSelectBus, refreshVersion }) {
     }
 
     refreshRef.current = refresh;
-    // Kun første indlæsning og et manuelt tryk på kortets refresh-knap.
+    // Første indlæsning og opdateringer fra kortets eksisterende refresh-funktion.
     refresh();
 
     return () => {

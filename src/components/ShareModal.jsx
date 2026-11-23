@@ -2,6 +2,7 @@ import defaultBus from "../assets/sharingbus/defaultSharingbus.png";
 import pokemonBus from "../assets/sharingbus/pokemonSharingbus.png";
 import habboBus from "../assets/sharingbus/habboSharingbus.png";
 import raveBus from "../assets/sharingbus/raveSharingbus.png";
+import closeIcon from "../assets/close.svg";
 
 import styles from "./ShareModal.module.css";
 
@@ -50,7 +51,12 @@ export default function ShareModal({ selectedTrip, selectedStop, onBack }) {
 
   return (
     <>
-      <div className={styles.backdrop} />
+      <button
+        type="button"
+        className={styles.backdrop}
+        onClick={onBack}
+        aria-label="Luk delemodal ved klik udenfor"
+      />
 
       <section
         className={styles.modal}
@@ -66,6 +72,14 @@ export default function ShareModal({ selectedTrip, selectedStop, onBack }) {
             aria-label="Tilbage til afgangen"
           >
             <span className={styles.backIcon} aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            className={styles.closeButton}
+            onClick={onBack}
+            aria-label="Luk delemodal"
+          >
+            <img src={closeIcon} alt="" />
           </button>
         </header>
 

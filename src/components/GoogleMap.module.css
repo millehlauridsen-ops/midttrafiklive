@@ -158,7 +158,7 @@
   padding: 0;
   border: 1px solid var(--border__default);
   border-radius: 50%;
-  background: var(--icon__background);
+  background: rgb(250 250 249 / 94%);
   box-shadow: 0 4px 12px var(--effect__shadow);
   cursor: pointer;
 }

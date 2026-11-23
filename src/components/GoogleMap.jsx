@@ -85,6 +85,7 @@ export default function GoogleMap({ userLocation }) {
   const [favorites, setFavorites] = useState(getFavorites);
   const favoritesRef = useRef(favorites);
   const [showAllStops, setShowAllStops] = useState(false);
+  const [busRefreshVersion, setBusRefreshVersion] = useState(0);
   const showAllStopsRef = useRef(false);
 
   // Brug useLocation til at få adgang til den valgte stoppested fra SearchPage
@@ -604,7 +605,13 @@ export default function GoogleMap({ userLocation }) {
   return (
     <div className={styles.mapContainer}>
       <div ref={mapRef} className={styles.map} />
-      {mapReady && <LiveBuses map={googleMapRef.current} onSelectBus={handleSelectBus} />}
+      {mapReady && (
+        <LiveBuses
+          map={googleMapRef.current}
+          onSelectBus={handleSelectBus}
+          refreshVersion={busRefreshVersion}
+        />
+      )}
 
       {favorites.length > 0 && (
         <div
@@ -644,13 +651,16 @@ export default function GoogleMap({ userLocation }) {
       <button
         type="button"
         className={styles.refreshButton}
-        onClick={() => refreshStopsRef.current?.()}
+        onClick={() => {
+          refreshStopsRef.current?.();
+          setBusRefreshVersion((version) => version + 1);
+        }}
         disabled={isRefreshing}
-        aria-label="Opdater stoppesteder"
+        aria-label="Opdater stoppesteder og buspositioner"
         aria-busy={isRefreshing}
-        title="Opdater stoppesteder"
+        title="Opdater stoppesteder og buspositioner"
       >
-        <span className={isRefreshing ? styles.rotating : ""}>
+        <span>
           <LoadingBus />
         </span>
       </button>

@@ -19,6 +19,8 @@ export default function ShareModal({ selectedTrip, selectedStop, onBack }) {
     url.searchParams.set("trip", selectedTrip.trip_id);
     url.searchParams.set("stop", selectedStop.stop_id);
     url.searchParams.set("departure", selectedTrip.departure_at);
+    url.searchParams.set("route", selectedTrip.route_short_name);
+    url.searchParams.set("destination", selectedTrip.destination);
 
     const shareData = {
       title: `Bus ${selectedTrip.route_short_name}`,

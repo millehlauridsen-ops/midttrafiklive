@@ -670,7 +670,7 @@ export default function GoogleMap({ userLocation }) {
         aria-busy={isRefreshing}
         title="Opdater stoppesteder og buspositioner"
       >
-        <span>
+        <span className={isRefreshing ? styles.rotating : ""}>
           <LoadingBus />
         </span>
       </button>

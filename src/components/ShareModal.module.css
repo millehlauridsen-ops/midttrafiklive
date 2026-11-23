@@ -45,7 +45,7 @@
   display: grid;
   place-items: center;
   min-height: 44px;
-  padding-inline: 44px;
+
 }
 
 .modal .backButton {
@@ -89,26 +89,31 @@
   align-self: center;
 }
 
-.modal h2 {
-  position: relative;
-  max-width: 100%;
+.shareHeading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  text-align: center;
+}
+
+.shareKicker {
   color: var(--accent__primary);
-  font-size: clamp(14px, 4.25vw, 18px);
-  font-weight: 800;
-  letter-spacing: -0.025em;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.modal h2 {
+  margin: 0;
+  color: var(--text__primary);
+  font-size: clamp(18px, 5.3vw, 22px);
+  font-weight: 850;
   line-height: 1.2;
   text-align: center;
   white-space: nowrap;
-}
-
-.modal h2::after {
-  content: "";
-  display: block;
-  width: 48px;
-  height: 3px;
-  margin: 6px auto 0;
-  border-radius: 3px;
-  background: var(--accent__primary);
 }
 
 .modal .shareButton {
@@ -193,7 +198,3 @@
   box-shadow: 0 0 18px var(--effect__shadow-strong), 0 0 12px var(--accent__primary);
 }
 
-/* Habbo: kantet understregning matcher pixeludtrykket. */
-:global(html[data-theme="habbo"]) .modal h2::after {
-  border-radius: 0;
-}

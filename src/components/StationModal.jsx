@@ -19,6 +19,7 @@ export default function StationModal({
   selectedTrip,
   setSelectedTrip,
   onShare,
+  onRefresh,
   onClose,
 }) {
   const tripListRef = useRef(null);
@@ -49,9 +50,13 @@ export default function StationModal({
 
     async function loadDepartures() {
       const currentRequest = ++requestId;
+      const finishRefresh = onRefresh?.();
 
       try {
-        const data = await getUpcomingDepartures(selectedStop.stop_id);
+        const [data] = await Promise.all([
+          getUpcomingDepartures(selectedStop.stop_id),
+          new Promise((resolve) => setTimeout(resolve, 600)),
+        ]);
 
         if (!cancelled && currentRequest === requestId) {
           setDepartures(data);
@@ -63,6 +68,7 @@ export default function StationModal({
           setDeparturesError("Kunne ikke hente afgange.");
         }
       } finally {
+        finishRefresh?.();
         if (!cancelled && currentRequest === requestId) {
           setDeparturesLoading(false);
         }
@@ -76,7 +82,7 @@ export default function StationModal({
       cancelled = true;
       clearInterval(interval);
     };
-  }, [selectedStop]);
+  }, [selectedStop, onRefresh]);
 
   useEffect(() => {
     if (!selectedStop) return;

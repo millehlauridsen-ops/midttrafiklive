@@ -146,6 +146,38 @@
   height: 100%;
 }
 
+.locateButton {
+  position: absolute;
+  top: 112px;
+  right: 34px;
+  z-index: 8;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  border: 1px solid var(--border__default);
+  border-radius: 50%;
+  background: var(--icon__background);
+  box-shadow: 0 4px 12px var(--effect__shadow);
+  cursor: pointer;
+}
+
+.locateButton img {
+  width: 24px;
+  height: 24px;
+}
+
+.locateButton:focus-visible {
+  outline: 3px solid var(--accent__primary);
+  outline-offset: 2px;
+}
+
+.locateButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 .refreshButton:disabled {
   cursor: progress;
 }

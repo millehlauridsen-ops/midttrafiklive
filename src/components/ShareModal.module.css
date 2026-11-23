@@ -1,0 +1,35 @@
+.backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  background: var(--overlay__darken);
+}
+
+.modal {
+  position: absolute;
+  z-index: 10;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px 16px;
+  background: var(--modal__background);
+  color: var(--text__primary);
+  border-radius: 24px 24px 0 0;
+}
+
+.modal h2,
+.modal p {
+  margin: 0;
+}
+
+.modal button {
+  min-height: 44px;
+  border: 1px solid var(--border__default);
+  border-radius: 12px;
+  background: var(--modal__background);
+  color: var(--text__primary);
+  cursor: pointer;
+}

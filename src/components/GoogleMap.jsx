@@ -609,7 +609,7 @@ export default function GoogleMap({ userLocation, onGroupsChange }) {
   useEffect(() => {
     if (!mapReady) return;
 
-    const interval = window.setInterval(refreshMap, 2500);
+    const interval = window.setInterval(refreshMap, 3000);
     return () => window.clearInterval(interval);
   }, [mapReady, refreshMap]);
 

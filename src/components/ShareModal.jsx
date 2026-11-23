@@ -58,7 +58,17 @@ export default function ShareModal({ selectedTrip, selectedStop, onBack }) {
         aria-modal="true"
         aria-labelledby="share-title"
       >
-        <h2 id="share-title">Jeg er med denne bus</h2>
+        <header className={styles.modalHeader}>
+          <button
+            type="button"
+            className={styles.backButton}
+            onClick={onBack}
+            aria-label="Tilbage til afgangen"
+          >
+            <span className={styles.backIcon} aria-hidden="true" />
+          </button>
+          <h2 id="share-title">Jeg er med denne bus</h2>
+        </header>
 
         <img
           src={
@@ -73,12 +83,8 @@ export default function ShareModal({ selectedTrip, selectedStop, onBack }) {
           <span>Mod {selectedTrip.destination}</span>
         </div>
 
-        <button type="button" onClick={handleShare}>
+        <button type="button" className={styles.shareButton} onClick={handleShare}>
           Del min bus
-        </button>
-
-        <button type="button" onClick={onBack}>
-          Tilbage til afgangen
         </button>
       </section>
     </>

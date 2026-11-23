@@ -45,6 +45,7 @@
   display: grid;
   place-items: center;
   min-height: 44px;
+  padding-inline: 44px;
 }
 
 .modal .backButton {
@@ -129,12 +130,6 @@
   border-radius: 2px;
   font: inherit;
   font-weight: 700;
-  box-shadow:
-    inset 2px 2px 0 var(--effect__highlight),
-    3px 3px 0 var(--effect__pixel-shadow);
-}
-
-:global(html[data-theme="habbo"]) .modal .shareButton {
   background: var(--icon__background);
   color: var(--icon__color);
   box-shadow:

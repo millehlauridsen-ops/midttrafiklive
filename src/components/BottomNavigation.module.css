@@ -78,6 +78,7 @@
   border-radius: 25px 25px 0 0;
   background: var(--navbar__inactive);
   box-shadow: 0 -5px 22px var(--effect__shadow);
+  z-index: 11;
 }
 
 .pokemonNav .transitOrb {

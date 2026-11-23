@@ -2,7 +2,11 @@
   position: absolute;
   inset: 0;
   z-index: 9;
+  width: 100%;
+  padding: 0;
+  border: 0;
   background: var(--overlay__darken);
+  cursor: default;
 }
 
 .modal {
@@ -64,6 +68,27 @@
   box-shadow: none;
 }
 
+.modal .closeButton {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.closeButton img {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
 .backIcon {
   display: block;
   width: 24px;
@@ -75,6 +100,7 @@
 }
 
 .modal .backButton:focus-visible,
+.modal .closeButton:focus-visible,
 .modal .shareButton:focus-visible {
   outline: 3px solid var(--accent__primary);
   outline-offset: 2px;
@@ -189,6 +215,13 @@
   border-radius: 0;
   background: transparent;
   color: var(--text__primary);
+  box-shadow: none;
+}
+
+:global(html[data-theme="habbo"]) .modal .closeButton {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
   box-shadow: none;
 }
 

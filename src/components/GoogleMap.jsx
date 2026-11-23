@@ -559,6 +559,7 @@ export default function GoogleMap({ userLocation }) {
       {selectedStop && selectedTrip && shareOpen && (
         <ShareModal
           selectedTrip={selectedTrip}
+          selectedStop={selectedStop}
           onBack={() => setShareOpen(false)}
         />
       )}

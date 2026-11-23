@@ -3,6 +3,7 @@ import { getUpcomingDepartures } from "../services/departures.js";
 import { getTripSchedule } from "../services/tripSchedule.js";
 import busIcon from "../assets/busvektor.svg";
 import favoriteIcon from "../assets/star.svg";
+import shareIcon from "../assets/share.svg";
 import DepartureList from "./DepartureList.jsx";
 import TripSchedule from "./TripSchedule.jsx";
 import styles from "./StationModal.module.css";
@@ -172,21 +173,32 @@ export default function StationModal({ selectedStop, onClose }) {
             </div>
           </div>
 
-          <button
-            type="button"
-            className={`${styles.favoriteIcon} ${
-              favorite ? styles.favoriteActive : ""
-            }`}
-            onClick={handleFavoriteClick}
-            aria-pressed={favorite}
-            aria-label={
-              favorite
-                ? "Fjern stoppested fra favoritter"
-                : "Tilføj stoppested til favoritter"
-            }
-          >
-            <img src={favoriteIcon} alt="" />
-          </button>
+          {selectedTrip ? (
+            <button
+              type="button"
+              className={styles.favoriteIcon}
+              aria-label="Del busafgang"
+              onClick={() => {}}
+            >
+              <img src={shareIcon} alt="" />
+            </button>
+          ) : (
+            <button
+              type="button"
+              className={`${styles.favoriteIcon} ${
+                favorite ? styles.favoriteActive : ""
+              }`}
+              onClick={handleFavoriteClick}
+              aria-pressed={favorite}
+              aria-label={
+                favorite
+                  ? "Fjern stoppested fra favoritter"
+                  : "Tilføj stoppested til favoritter"
+              }
+            >
+              <img src={favoriteIcon} alt="" />
+            </button>
+          )}
         </div>
         <div ref={tripListRef} className={styles.departureList}>
           {selectedTrip ? (

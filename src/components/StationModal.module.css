@@ -279,6 +279,15 @@
   transform: rotate(180deg);
 }
 
-:global(html[data-theme="habbo"]) .favoriteActive::after {
-  background: var(--icon__color);
+:global(html[data-theme="habbo"]) .favoriteIcon.favoriteActive {
+  background: var(--effect__pixel-yellow);
+  border-color: var(--effect__pixel-ink);
+  box-shadow:
+    inset 2px 2px 0 var(--effect__pixel-highlight),
+    inset 0 -3px 0 var(--effect__pixel-lowlight),
+    3px 3px 0 var(--effect__pixel-shadow);
+}
+
+:global(html[data-theme="habbo"]) .favoriteIcon.favoriteActive::after {
+  background: var(--effect__pixel-ink);
 }

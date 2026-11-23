@@ -73,6 +73,7 @@ export default function LiveBuses({ map, onSelectBus, refreshVersion }) {
         this.bus = bus;
         this.label.textContent = bus.route_short_name || "?";
         this.element.classList.toggle(styles.blue, /^\d{3}$/.test(bus.route_short_name ?? ""));
+        this.element.classList.toggle(styles.lightRail, /^L[12]$/.test(bus.route_short_name ?? ""));
         this.element.title = `Simuleret bus ${bus.route_short_name} mod ${bus.destination}`;
         this.element.setAttribute("aria-label", this.element.title);
         this.draw();

@@ -84,9 +84,9 @@ export default function GoogleMap({ userLocation }) {
   const [shareOpen, setShareOpen] = useState(false);
   const [favorites, setFavorites] = useState(getFavorites);
   const favoritesRef = useRef(favorites);
-  const [showAllStops, setShowAllStops] = useState(false);
+  const [showAllStops, setShowAllStops] = useState(true);
   const [busRefreshVersion, setBusRefreshVersion] = useState(0);
-  const showAllStopsRef = useRef(false);
+  const showAllStopsRef = useRef(true);
 
   // Brug useLocation til at få adgang til den valgte stoppested fra SearchPage
   const location = useLocation();
@@ -196,8 +196,8 @@ export default function GoogleMap({ userLocation }) {
     }
 
     if (favorites.length === 0) {
-      showAllStopsRef.current = false;
-      setShowAllStops(false);
+      showAllStopsRef.current = true;
+      setShowAllStops(true);
       refreshStopsRef.current?.();
     }
   }, [favorites]);
@@ -476,11 +476,6 @@ export default function GoogleMap({ userLocation }) {
 
           map.fitBounds(bounds, 48);
         };
-
-        // Brug favoritternes placering ved første indlæsning
-        if (favoritesRef.current.length > 0) {
-          fitFavoritesRef.current();
-        }
 
         zoomListener = map.addListener("zoom_changed", () => {
           renderStops();

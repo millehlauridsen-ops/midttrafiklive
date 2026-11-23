@@ -18,7 +18,7 @@
 
   width: calc(100% - 40px);
   max-width: 360px;
-  padding: 24px 16px;
+  padding: 12px 16px 24px;
 
   background: var(--modal__background);
   color: var(--text__primary);
@@ -45,7 +45,7 @@
   display: grid;
   place-items: center;
   min-height: 44px;
-
+  margin-bottom: -10px;
 }
 
 .modal .backButton {

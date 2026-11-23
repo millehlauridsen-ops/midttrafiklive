@@ -8,6 +8,7 @@ import LoadingBus from "./LoadingBus.jsx";
 import LiveBuses from "./LiveBuses.jsx";
 import styles from "./GoogleMap.module.css";
 import busIcon from "../assets/busvektor.svg";
+import locateIcon from "../assets/locate.svg";
 import { getMapStyles } from "../themes/mapStyles.js";
 import { useLocation } from "react-router";
 import { getStopById } from "../services/stops.js";
@@ -49,12 +50,14 @@ function groupStops(stops, projection, zoom) {
 }
 
 // GoogleMap-komponenten håndterer kortvisning, markører for stoppesteder og brugerens lokation.
-export default function GoogleMap({ userLocation }) {
+export default function GoogleMap({ userLocation, onGroupsChange }) {
   const mapRef = useRef(null);
   const googleMapRef = useRef(null);
   const locationMarkerRef = useRef(null);
   const latestLocationRef = useRef(userLocation);
   latestLocationRef.current = userLocation;
+  const onGroupsChangeRef = useRef(onGroupsChange);
+  onGroupsChangeRef.current = onGroupsChange;
 
   const refreshStopsRef = useRef(null);
   const renderStopsRef = useRef(null);
@@ -326,6 +329,7 @@ export default function GoogleMap({ userLocation }) {
               : cachedStops;
 
           const groups = groupStops(visibleStops, projection, zoom);
+          onGroupsChangeRef.current?.(groups.some((group) => group.length > 1));
 
           const newMarkers = groups.map((group) => {
             if (group.length === 1) {
@@ -582,6 +586,20 @@ export default function GoogleMap({ userLocation }) {
     }
   }
 
+  function centerOnUser() {
+    const map = googleMapRef.current;
+    const currentLocation = latestLocationRef.current;
+    if (!map || !currentLocation) return;
+
+    const latitude = Number(currentLocation.latitude);
+    const longitude = Number(currentLocation.longitude);
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return;
+
+    map.setCenter({ lat: latitude, lng: longitude });
+    map.setZoom(16);
+    map.set("hasCenteredOnUser", true);
+  }
+
   // Brug samme opdatering ved automatisk og manuel refresh.
   const refreshMap = useCallback(() => {
     refreshStopsRef.current?.();
@@ -668,6 +686,17 @@ export default function GoogleMap({ userLocation }) {
         <span className={isRefreshing ? styles.rotating : ""}>
           <LoadingBus />
         </span>
+      </button>
+
+      <button
+        type="button"
+        className={styles.locateButton}
+        onClick={centerOnUser}
+        disabled={!mapReady || !userLocation}
+        aria-label="Centrer kortet på min position"
+        title={userLocation ? "Centrer på min position" : "Position ikke tilgængelig"}
+      >
+        <img src={locateIcon} alt="" />
       </button>
 
       {selectedStop && !shareOpen && (

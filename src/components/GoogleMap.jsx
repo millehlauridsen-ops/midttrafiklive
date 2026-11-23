@@ -587,6 +587,19 @@ export default function GoogleMap({ userLocation }) {
     }
   }
 
+  // Brug samme opdatering ved automatisk og manuel refresh.
+  const refreshMap = useCallback(() => {
+    refreshStopsRef.current?.();
+    setBusRefreshVersion((version) => version + 1);
+  }, []);
+
+  useEffect(() => {
+    if (!mapReady) return;
+
+    const interval = window.setInterval(refreshMap, 5000);
+    return () => window.clearInterval(interval);
+  }, [mapReady, refreshMap]);
+
   function handleToggleStops(showAll) {
     showAllStopsRef.current = showAll;
     setShowAllStops(showAll);
@@ -651,10 +664,7 @@ export default function GoogleMap({ userLocation }) {
       <button
         type="button"
         className={styles.refreshButton}
-        onClick={() => {
-          refreshStopsRef.current?.();
-          setBusRefreshVersion((version) => version + 1);
-        }}
+        onClick={refreshMap}
         disabled={isRefreshing}
         aria-label="Opdater stoppesteder og buspositioner"
         aria-busy={isRefreshing}

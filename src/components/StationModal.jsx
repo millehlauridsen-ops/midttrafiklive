@@ -194,7 +194,7 @@ export default function StationModal({
           {selectedTrip ? (
             <button
               type="button"
-              className={styles.favoriteIcon}
+              className={`${styles.favoriteIcon} ${styles.shareAction}`}
               aria-label="Del busafgang"
               onClick={onShare}
             >

@@ -61,11 +61,11 @@
 }
 
 .lightRail {
-  color: #ffffff;
+  color: #252B29;
 }
 
 .lightRail .busArt::before {
-  background: #747879;
+  background: #B8BEC0;
 }
 
 /* SVG'ens busfront vender mod venstre; linjenummeret spejles ikke. */

@@ -67,7 +67,6 @@ export default function ShareModal({ selectedTrip, selectedStop, onBack }) {
           >
             <span className={styles.backIcon} aria-hidden="true" />
           </button>
-          <h2 id="share-title">Jeg er med denne bus</h2>
         </header>
 
         <img
@@ -77,6 +76,11 @@ export default function ShareModal({ selectedTrip, selectedStop, onBack }) {
           alt=""
           className={styles.sharingIllustration}
         />
+
+        <div className={styles.shareHeading}>
+          <span className={styles.shareKicker}>Del din bus</span>
+          <h2 id="share-title">Jeg er med denne bus</h2>
+        </div>
 
         <div className={styles.busDetails}>
           <strong>Linje {selectedTrip.route_short_name}</strong>

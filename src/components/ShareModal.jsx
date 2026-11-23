@@ -36,26 +36,15 @@ export default function ShareModal({ selectedTrip, selectedStop, onBack }) {
         alert("Linket er kopieret!");
       }
     } catch (error) {
-      if (error.name !== "AbortError") {
-        console.error("Kunne ikke dele busafgangen:", error);
+      if (error.name === "AbortError") return;
+
+      try {
+        await navigator.clipboard.writeText(url.toString());
+        alert("Linket er kopieret!");
+      } catch (copyError) {
+        console.error("Kunne ikke dele eller kopiere linket:", copyError);
         alert("Kunne ikke dele linket.");
       }
-    }
-  }
-
-  async function handleCopyLink() {
-    const url = new URL("/", window.location.origin);
-
-    url.searchParams.set("trip", selectedTrip.trip_id);
-    url.searchParams.set("stop", selectedStop.stop_id);
-    url.searchParams.set("departure", selectedTrip.departure_at);
-
-    try {
-      await navigator.clipboard.writeText(url.toString());
-      alert("Linket er kopieret!");
-    } catch (error) {
-      console.error("Kunne ikke kopiere linket:", error);
-      alert("Kunne ikke kopiere linket.");
     }
   }
 
@@ -85,11 +74,7 @@ export default function ShareModal({ selectedTrip, selectedStop, onBack }) {
         </div>
 
         <button type="button" onClick={handleShare}>
-          Del link til denne bus
-        </button>
-
-        <button type="button" onClick={handleCopyLink}>
-          Kopiér link
+          Del min bus
         </button>
 
         <button type="button" onClick={onBack}>

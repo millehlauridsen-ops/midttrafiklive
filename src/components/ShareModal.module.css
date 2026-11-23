@@ -8,16 +8,22 @@
 .modal {
   position: absolute;
   z-index: 10;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
   display: flex;
   flex-direction: column;
   gap: 16px;
+
+  width: calc(100% - 40px);
+  max-width: 360px;
   padding: 24px 16px;
+
   background: var(--modal__background);
   color: var(--text__primary);
-  border-radius: 24px 24px 0 0;
+  border-radius: 24px;
+  box-shadow: 0 8px 32px var(--effect__shadow-strong);
 }
 
 .modal h2,
@@ -32,4 +38,37 @@
   background: var(--modal__background);
   color: var(--text__primary);
   cursor: pointer;
+}
+
+.sharingIllustration {
+  display: block;
+  width: 100%;
+  max-width: 240px;
+  max-height: 180px;
+  object-fit: contain;
+  align-self: center;
+}
+
+.modal h2 {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.busDetails {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.busDetails strong {
+  font-size: 22px;
+  color: var(--text__primary);
+}
+
+.busDetails span {
+  font-size: 16px;
+  color: var(--text__muted);
 }

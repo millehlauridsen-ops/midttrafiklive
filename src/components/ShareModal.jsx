@@ -1,4 +1,16 @@
+import defaultBus from "../assets/sharingbus/defaultSharingbus.png";
+import pokemonBus from "../assets/sharingbus/pokemonSharingbus.png";
+import habboBus from "../assets/sharingbus/habboSharingbus.png";
+import raveBus from "../assets/sharingbus/raveSharingbus.png";
+
 import styles from "./ShareModal.module.css";
+
+const sharingImages = {
+  default: defaultBus,
+  pokemon: pokemonBus,
+  habbo: habboBus,
+  rave: raveBus,
+};
 
 export default function ShareModal({ selectedTrip, onBack }) {
   return (
@@ -11,11 +23,20 @@ export default function ShareModal({ selectedTrip, onBack }) {
         aria-modal="true"
         aria-labelledby="share-title"
       >
-        <h2 id="share-title">Del busafgang</h2>
+        <h2 id="share-title">Jeg er med denne bus</h2>
 
-        <p>
-          Linje {selectedTrip.route_short_name} mod {selectedTrip.destination}
-        </p>
+        <img
+          src={
+            sharingImages[document.documentElement.dataset.theme] ?? defaultBus
+          }
+          alt=""
+          className={styles.sharingIllustration}
+        />
+
+        <div className={styles.busDetails}>
+          <strong>Linje {selectedTrip.route_short_name}</strong>
+          <span>Mod {selectedTrip.destination}</span>
+        </div>
 
         <button type="button" onClick={onBack}>
           Tilbage til afgangen

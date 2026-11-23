@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { setOptions, importLibrary } from "@googlemaps/js-api-loader";
 import { getStops } from "../services/stops.js";
 import { getFavorites } from "../services/favorites.js";
 import StationModal from "./StationModal.jsx";
 import ShareModal from "./ShareModal.jsx";
-import loadingBusIcon from "../assets/loadingmbus.svg";
+import LoadingBus from "./LoadingBus.jsx";
 import styles from "./GoogleMap.module.css";
 import busIcon from "../assets/busvektor.svg";
 import { getMapStyles } from "../themes/mapStyles.js";
@@ -60,6 +60,21 @@ export default function GoogleMap({ userLocation }) {
   const fitFavoritesRef = useRef(null);
 
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const activeRefreshesRef = useRef(0);
+
+  // Saml parallelle opdateringer, så animationen først stopper, når alle er færdige.
+  const beginRefresh = useCallback(() => {
+    activeRefreshesRef.current += 1;
+    setIsRefreshing(true);
+    let finished = false;
+
+    return () => {
+      if (finished) return;
+      finished = true;
+      activeRefreshesRef.current = Math.max(0, activeRefreshesRef.current - 1);
+      if (activeRefreshesRef.current === 0) setIsRefreshing(false);
+    };
+  }, []);
   const [error, setError] = useState("");
   const [shareError, setShareError] = useState("");
   const [selectedStop, setSelectedStop] = useState(null);
@@ -402,8 +417,13 @@ export default function GoogleMap({ userLocation }) {
             west: bounds.getSouthWest().lng(),
           };
 
+          const finishRefresh = beginRefresh();
           try {
-            const stops = await getStops(area);
+            // Vis mindst én fuld rotation ved hver kortopdatering.
+            const [stops] = await Promise.all([
+              getStops(area),
+              new Promise((resolve) => setTimeout(resolve, 600)),
+            ]);
             if (cancelled || currentRequest !== requestId) return;
             cachedStops = stops.filter(
               (stop) =>
@@ -415,21 +435,12 @@ export default function GoogleMap({ userLocation }) {
             if (!cancelled && currentRequest === requestId) {
               console.error("Kunne ikke hente stoppesteder:", fetchError);
             }
+          } finally {
+            finishRefresh();
           }
         }
 
-        refreshStopsRef.current = async () => {
-          setIsRefreshing(true);
-          try {
-            // Hold indikatoren synlig i mindst 600 ms, også ved hurtig datahentning.
-            await Promise.all([
-              updateStops(),
-              new Promise((resolve) => setTimeout(resolve, 600)),
-            ]);
-          } finally {
-            if (!cancelled) setIsRefreshing(false);
-          }
-        };
+        refreshStopsRef.current = updateStops;
 
         // tilpasser kortet automatisk, så alle favoritstoppesteder kan ses, selvom de ligger forskellige steder i Aarhus
 
@@ -613,11 +624,9 @@ export default function GoogleMap({ userLocation }) {
         aria-busy={isRefreshing}
         title="Opdater stoppesteder"
       >
-        <img
-          src={loadingBusIcon}
-          alt=""
-          className={isRefreshing ? styles.rotating : ""}
-        />
+        <span className={isRefreshing ? styles.rotating : ""}>
+          <LoadingBus />
+        </span>
       </button>
 
       {selectedStop && !shareOpen && (
@@ -627,6 +636,7 @@ export default function GoogleMap({ userLocation }) {
           selectedTrip={selectedTrip}
           setSelectedTrip={setSelectedTrip}
           onShare={() => setShareOpen(true)}
+          onRefresh={beginRefresh}
           onClose={() => {
             setSelectedTrip(null);
             setSelectedStop(null);

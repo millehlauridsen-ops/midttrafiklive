@@ -1,29 +1,76 @@
 .busMarker {
   position: absolute;
   z-index: 2;
-  display: grid;
-  place-items: center;
-  min-width: 36px;
-  height: 36px;
-  padding: 0 7px;
-  border: 2px solid var(--bus__stoppestedborder);
-  border-radius: 12px;
-  background: var(--route__yellow);
+  width: 66px;
+  height: 50px;
+  padding: 0;
+  border: 0;
+  background: transparent;
   color: var(--route__onyellow);
-  box-shadow: 0 3px 10px rgb(0 0 0 / 25%);
-  font-size: 12px;
-  font-weight: 800;
-  white-space: nowrap;
   cursor: pointer;
   transform: translate(-50%, -50%);
 }
 
+.busArt {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* SVG'en har gennemsigtig karrosseri; farven ligger bag kontur og hjul. */
+.busArt::before {
+  content: "";
+  position: absolute;
+  top: 7px;
+  left: 9px;
+  width: 48px;
+  height: 29px;
+  border-radius: 7px 5px 4px 4px;
+  background: var(--route__yellow);
+}
+
+.busArt img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 66px;
+  height: 50px;
+}
+
+.routeNumber {
+  position: absolute;
+  top: 12px;
+  left: 20px;
+  display: grid;
+  place-items: center;
+  width: 35px;
+  height: 19px;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
 .blue {
-  background: var(--route__blue);
   color: var(--route__onblue);
+}
+
+.blue .busArt::before {
+  background: var(--route__blue);
+}
+
+/* SVG'ens busfront vender mod venstre; linjenummeret spejles ikke. */
+.facingRight .busArt {
+  transform: scaleX(-1);
+}
+
+.facingRight .routeNumber {
+  left: 11px;
 }
 
 .busMarker:focus-visible {
   outline: 3px solid var(--text__primary);
   outline-offset: 3px;
+  border-radius: 8px;
 }

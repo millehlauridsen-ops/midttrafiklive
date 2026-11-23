@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { getSimulatedBuses } from "../services/liveBuses.js";
 import styles from "./LiveBuses.module.css";
 
-const UPDATE_INTERVAL = 10000;
+const UPDATE_INTERVAL = 4000;
 
 // Markører lever uden for Reacts DOM, fordi Google Maps styrer overlay-laget.
 export default function LiveBuses({ map, onSelectBus }) {

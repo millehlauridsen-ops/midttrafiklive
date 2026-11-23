@@ -27,7 +27,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 60%;
+  height: 55%;
   max-height: 100%;
   display: flex;
   flex-direction: column;
@@ -199,7 +199,6 @@
 }
 
 :global(html[data-theme="pokemon"]) .stopInfo {
-  height: 43%;
   border-radius: 28px 28px 0 0;
   box-shadow: 0 -8px 30px var(--effect__shadow-strong);
 }
@@ -249,4 +248,22 @@
   background: var(--icon__color);
   -webkit-mask: url("../assets/busvektor.svg") center / contain no-repeat;
   mask: url("../assets/busvektor.svg") center / contain no-repeat;
+}
+
+.headerBackButton {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.headerBackButton img {
+  width: 24px;
+  height: 24px;
+  transform: rotate(180deg);
 }

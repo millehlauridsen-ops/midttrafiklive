@@ -4,6 +4,7 @@ import { getTripSchedule } from "../services/tripSchedule.js";
 import busIcon from "../assets/busvektor.svg";
 import favoriteIcon from "../assets/star.svg";
 import shareIcon from "../assets/share.svg";
+import chevronIcon from "../assets/chevron.svg";
 import DepartureList from "./DepartureList.jsx";
 import TripSchedule from "./TripSchedule.jsx";
 import styles from "./StationModal.module.css";
@@ -164,9 +165,21 @@ export default function StationModal({
         </button>
         <div className={styles.modalHeader}>
           <div className={styles.stationTitleMain}>
-            <span className={styles.stationBusIcon} aria-hidden="true">
-              <img src={busIcon} alt="" />
-            </span>
+            {selectedTrip ? (
+              <button
+                type="button"
+                className={styles.headerBackButton}
+                onClick={() => setSelectedTrip(null)}
+                aria-label="Tilbage til alle afgange"
+              >
+                <img src={chevronIcon} alt="" />
+              </button>
+            ) : (
+              <span className={styles.stationBusIcon} aria-hidden="true">
+                <img src={busIcon} alt="" />
+              </span>
+            )}
+
             <div className={styles.stopDetails}>
               <h2 id="station-modal-title">{selectedStop.stop_name}</h2>
               <p>
@@ -213,7 +226,6 @@ export default function StationModal({
               loading={tripLoading}
               error={tripError}
               listRef={tripListRef}
-              onBack={() => setSelectedTrip(null)}
             />
           ) : (
             <DepartureList

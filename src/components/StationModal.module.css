@@ -27,7 +27,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 50%;
+  height: 55%;
   max-height: 100%;
   display: flex;
   flex-direction: column;
@@ -76,6 +76,7 @@
 }
 
 .stationBusIcon {
+  position: relative;
   display: grid;
   place-items: center;
   flex-shrink: 0;
@@ -86,10 +87,17 @@
 }
 
 .stationBusIcon img {
+  display: none;
+}
+
+.stationBusIcon::after {
+  content: "";
+  display: block;
   width: 24px;
   height: 24px;
-  filter: invert(39%) sepia(8%) saturate(674%) hue-rotate(103deg)
-    brightness(92%) contrast(89%);
+  background: var(--icon__color);
+  -webkit-mask: url("../assets/busvektor.svg") center / contain no-repeat;
+  mask: url("../assets/busvektor.svg") center / contain no-repeat;
 }
 
 .stopDetails {
@@ -116,6 +124,7 @@
 }
 
 .favoriteIcon {
+  position: relative;
   display: grid;
   place-items: center;
   flex-shrink: 0;
@@ -130,9 +139,22 @@
 }
 
 .favoriteIcon img {
+  display: none;
+}
+
+.favoriteIcon::after {
+  content: "";
+  display: block;
   width: 24px;
   height: 24px;
-  display: block;
+  background: var(--icon__color);
+  -webkit-mask: url("../assets/star.svg") center / contain no-repeat;
+  mask: url("../assets/star.svg") center / contain no-repeat;
+}
+
+.shareAction::after {
+  -webkit-mask-image: url("../assets/share.svg");
+  mask-image: url("../assets/share.svg");
 }
 
 .favoriteActive {
@@ -140,9 +162,8 @@
   border-color: var(--favorite__active-border);
 }
 
-.favoriteActive img {
-  filter: brightness(0) saturate(100%) invert(75%) sepia(72%) saturate(970%)
-    hue-rotate(352deg);
+.favoriteActive::after {
+  background: var(--icon__active);
 }
 
 /* Afgangslisten scroller, mens headeren bliver stående */
@@ -199,7 +220,6 @@
 }
 
 :global(html[data-theme="pokemon"]) .stopInfo {
-  height: 43%;
   border-radius: 28px 28px 0 0;
   box-shadow: 0 -8px 30px var(--effect__shadow-strong);
 }
@@ -232,22 +252,42 @@
   border-radius: 2px;
 }
 
-
-/* Habbo: bus-SVG farves med temaets ikonfarve. */
-:global(html[data-theme="habbo"]) .stationBusIcon {
-  position: relative;
+.headerBackButton {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
 }
 
-:global(html[data-theme="habbo"]) .stationBusIcon img {
-  visibility: hidden;
+.headerBackButton img {
+  display: none;
 }
 
-:global(html[data-theme="habbo"]) .stationBusIcon::after {
+.headerBackButton::after {
   content: "";
-  position: absolute;
+  display: block;
   width: 24px;
   height: 24px;
-  background: var(--icon__color);
-  -webkit-mask: url("../assets/busvektor.svg") center / contain no-repeat;
-  mask: url("../assets/busvektor.svg") center / contain no-repeat;
+  background: var(--text__primary);
+  -webkit-mask: url("../assets/chevron.svg") center / contain no-repeat;
+  mask: url("../assets/chevron.svg") center / contain no-repeat;
+  transform: rotate(180deg);
+}
+
+:global(html[data-theme="habbo"]) .favoriteIcon.favoriteActive {
+  background: var(--effect__pixel-yellow);
+  border-color: var(--effect__pixel-ink);
+  box-shadow:
+    inset 2px 2px 0 var(--effect__pixel-highlight),
+    inset 0 -3px 0 var(--effect__pixel-lowlight),
+    3px 3px 0 var(--effect__pixel-shadow);
+}
+
+:global(html[data-theme="habbo"]) .favoriteIcon.favoriteActive::after {
+  background: var(--effect__pixel-ink);
 }

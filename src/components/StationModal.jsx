@@ -3,6 +3,8 @@ import { getUpcomingDepartures } from "../services/departures.js";
 import { getTripSchedule } from "../services/tripSchedule.js";
 import busIcon from "../assets/busvektor.svg";
 import favoriteIcon from "../assets/star.svg";
+import shareIcon from "../assets/share.svg";
+import chevronIcon from "../assets/chevron.svg";
 import DepartureList from "./DepartureList.jsx";
 import TripSchedule from "./TripSchedule.jsx";
 import styles from "./StationModal.module.css";
@@ -12,7 +14,14 @@ import {
   removeFavorite,
 } from "../services/favorites.js";
 
-export default function StationModal({ selectedStop, onClose }) {
+export default function StationModal({
+  selectedStop,
+  selectedTrip,
+  setSelectedTrip,
+  onShare,
+  onRefresh,
+  onClose,
+}) {
   const tripListRef = useRef(null);
   const [favorite, setFavorite] = useState(() =>
     isFavorite(selectedStop.stop_id),
@@ -20,7 +29,6 @@ export default function StationModal({ selectedStop, onClose }) {
   const [departures, setDepartures] = useState([]);
   const [departuresLoading, setDeparturesLoading] = useState(true);
   const [departuresError, setDeparturesError] = useState("");
-  const [selectedTrip, setSelectedTrip] = useState(null);
   const [tripStops, setTripStops] = useState([]);
   const [tripLoading, setTripLoading] = useState(false);
   const [tripError, setTripError] = useState("");
@@ -42,9 +50,13 @@ export default function StationModal({ selectedStop, onClose }) {
 
     async function loadDepartures() {
       const currentRequest = ++requestId;
+      const finishRefresh = onRefresh?.();
 
       try {
-        const data = await getUpcomingDepartures(selectedStop.stop_id);
+        const [data] = await Promise.all([
+          getUpcomingDepartures(selectedStop.stop_id),
+          new Promise((resolve) => setTimeout(resolve, 600)),
+        ]);
 
         if (!cancelled && currentRequest === requestId) {
           setDepartures(data);
@@ -56,6 +68,7 @@ export default function StationModal({ selectedStop, onClose }) {
           setDeparturesError("Kunne ikke hente afgange.");
         }
       } finally {
+        finishRefresh?.();
         if (!cancelled && currentRequest === requestId) {
           setDeparturesLoading(false);
         }
@@ -69,7 +82,7 @@ export default function StationModal({ selectedStop, onClose }) {
       cancelled = true;
       clearInterval(interval);
     };
-  }, [selectedStop]);
+  }, [selectedStop, onRefresh]);
 
   useEffect(() => {
     if (!selectedStop) return;
@@ -159,9 +172,21 @@ export default function StationModal({ selectedStop, onClose }) {
         </button>
         <div className={styles.modalHeader}>
           <div className={styles.stationTitleMain}>
-            <span className={styles.stationBusIcon} aria-hidden="true">
-              <img src={busIcon} alt="" />
-            </span>
+            {selectedTrip ? (
+              <button
+                type="button"
+                className={styles.headerBackButton}
+                onClick={() => setSelectedTrip(null)}
+                aria-label="Tilbage til alle afgange"
+              >
+                <img src={chevronIcon} alt="" />
+              </button>
+            ) : (
+              <span className={styles.stationBusIcon} aria-hidden="true">
+                <img src={busIcon} alt="" />
+              </span>
+            )}
+
             <div className={styles.stopDetails}>
               <h2 id="station-modal-title">{selectedStop.stop_name}</h2>
               <p>
@@ -172,21 +197,32 @@ export default function StationModal({ selectedStop, onClose }) {
             </div>
           </div>
 
-          <button
-            type="button"
-            className={`${styles.favoriteIcon} ${
-              favorite ? styles.favoriteActive : ""
-            }`}
-            onClick={handleFavoriteClick}
-            aria-pressed={favorite}
-            aria-label={
-              favorite
-                ? "Fjern stoppested fra favoritter"
-                : "Tilføj stoppested til favoritter"
-            }
-          >
-            <img src={favoriteIcon} alt="" />
-          </button>
+          {selectedTrip ? (
+            <button
+              type="button"
+              className={`${styles.favoriteIcon} ${styles.shareAction}`}
+              aria-label="Del busafgang"
+              onClick={onShare}
+            >
+              <img src={shareIcon} alt="" />
+            </button>
+          ) : (
+            <button
+              type="button"
+              className={`${styles.favoriteIcon} ${
+                favorite ? styles.favoriteActive : ""
+              }`}
+              onClick={handleFavoriteClick}
+              aria-pressed={favorite}
+              aria-label={
+                favorite
+                  ? "Fjern stoppested fra favoritter"
+                  : "Tilføj stoppested til favoritter"
+              }
+            >
+              <img src={favoriteIcon} alt="" />
+            </button>
+          )}
         </div>
         <div ref={tripListRef} className={styles.departureList}>
           {selectedTrip ? (
@@ -197,7 +233,6 @@ export default function StationModal({ selectedStop, onClose }) {
               loading={tripLoading}
               error={tripError}
               listRef={tripListRef}
-              onBack={() => setSelectedTrip(null)}
             />
           ) : (
             <DepartureList

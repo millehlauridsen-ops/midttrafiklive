@@ -77,3 +77,15 @@ export async function getNearbyStops(latitude, longitude) {
     .sort((a, b) => a.distance - b.distance)
     .slice(0, 4); // Returner de 4 nærmeste stoppesteder
 }
+
+export async function getStopById(stopId) {
+  const { data, error } = await supabase
+    .from("gtfs_stops")
+    .select("stop_id, stop_name, stop_lat, stop_lon")
+    .eq("stop_id", stopId)
+    .maybeSingle();
+
+  if (error) throw error;
+
+  return data;
+}

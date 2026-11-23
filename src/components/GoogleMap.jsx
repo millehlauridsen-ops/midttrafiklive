@@ -1,13 +1,16 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { setOptions, importLibrary } from "@googlemaps/js-api-loader";
 import { getStops } from "../services/stops.js";
 import { getFavorites } from "../services/favorites.js";
 import StationModal from "./StationModal.jsx";
-import loadingBusIcon from "../assets/loadingmbus.svg";
+import ShareModal from "./ShareModal.jsx";
+import LoadingBus from "./LoadingBus.jsx";
 import styles from "./GoogleMap.module.css";
 import busIcon from "../assets/busvektor.svg";
 import { getMapStyles } from "../themes/mapStyles.js";
 import { useLocation } from "react-router";
+import { getStopById } from "../services/stops.js";
+import { getTripSchedule } from "../services/tripSchedule.js";
 
 const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
@@ -57,8 +60,26 @@ export default function GoogleMap({ userLocation }) {
   const fitFavoritesRef = useRef(null);
 
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const activeRefreshesRef = useRef(0);
+
+  // Saml parallelle opdateringer, så animationen først stopper, når alle er færdige.
+  const beginRefresh = useCallback(() => {
+    activeRefreshesRef.current += 1;
+    setIsRefreshing(true);
+    let finished = false;
+
+    return () => {
+      if (finished) return;
+      finished = true;
+      activeRefreshesRef.current = Math.max(0, activeRefreshesRef.current - 1);
+      if (activeRefreshesRef.current === 0) setIsRefreshing(false);
+    };
+  }, []);
   const [error, setError] = useState("");
+  const [shareError, setShareError] = useState("");
   const [selectedStop, setSelectedStop] = useState(null);
+  const [selectedTrip, setSelectedTrip] = useState(null);
+  const [shareOpen, setShareOpen] = useState(false);
   const [favorites, setFavorites] = useState(getFavorites);
   const favoritesRef = useRef(favorites);
   const [showAllStops, setShowAllStops] = useState(false);
@@ -68,6 +89,81 @@ export default function GoogleMap({ userLocation }) {
   const location = useLocation();
   const requestedStop = location.state?.selectedStop;
   const [mapReady, setMapReady] = useState(false);
+
+  useEffect(() => {
+    if (!mapReady) return;
+
+    const params = new URLSearchParams(location.search);
+
+    const tripId = params.get("trip");
+    const stopId = params.get("stop");
+    const departureAt = params.get("departure");
+
+    const hasShareParams =
+      params.has("trip") || params.has("stop") || params.has("departure");
+
+    if (!hasShareParams) return;
+
+    if (!tripId || !stopId || !departureAt) {
+      setShareError("Linket mangler oplysninger om busafgangen.");
+      return;
+    }
+
+    let cancelled = false;
+
+    async function openSharedTrip() {
+      try {
+        if (!Number.isFinite(Date.parse(departureAt))) {
+          throw new Error("Ugyldigt afgangstidspunkt");
+        }
+
+        const [stop, schedule] = await Promise.all([
+          getStopById(stopId),
+          getTripSchedule(tripId, stopId, departureAt),
+        ]);
+
+        if (cancelled) return;
+
+        if (!stop || schedule.length === 0) {
+          throw new Error("Busafgangen kunne ikke findes");
+        }
+
+        setSelectedStop(stop);
+        setSelectedTrip({
+          trip_id: tripId,
+          departure_at: departureAt,
+          route_short_name: params.get("route") || "?",
+          destination: params.get("destination") || "Ukendt destination",
+        });
+        setShareOpen(false);
+        setError("");
+
+        const map = googleMapRef.current;
+
+        if (map) {
+          map.set("hasCenteredOnUser", true);
+          map.panTo({
+            lat: Number(stop.stop_lat),
+            lng: Number(stop.stop_lon),
+          });
+          map.setZoom(17);
+        }
+      } catch (error) {
+        if (cancelled) return;
+
+        console.error("Kunne ikke åbne delt busafgang:", error);
+        setShareError(
+          "Busafgangen kunne ikke findes. Linket kan være ugyldigt eller udløbet.",
+        );
+      }
+    }
+
+    openSharedTrip();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [mapReady, location.search]);
 
   // Lyt til ændringer i favoritstoppesteder og opdater kortet derefter.
   useEffect(() => {
@@ -237,7 +333,11 @@ export default function GoogleMap({ userLocation }) {
                 stop.stop_name,
               );
 
-              const selectStop = () => setSelectedStop(stop);
+              const selectStop = () => {
+                setSelectedTrip(null);
+                setShareOpen(false);
+                setSelectedStop(stop);
+              };
               marker.element.addEventListener("click", selectStop);
               marker.element.setAttribute("role", "button");
               marker.element.setAttribute("tabindex", "0");
@@ -317,8 +417,13 @@ export default function GoogleMap({ userLocation }) {
             west: bounds.getSouthWest().lng(),
           };
 
+          const finishRefresh = beginRefresh();
           try {
-            const stops = await getStops(area);
+            // Vis mindst én fuld rotation ved hver kortopdatering.
+            const [stops] = await Promise.all([
+              getStops(area),
+              new Promise((resolve) => setTimeout(resolve, 600)),
+            ]);
             if (cancelled || currentRequest !== requestId) return;
             cachedStops = stops.filter(
               (stop) =>
@@ -330,21 +435,12 @@ export default function GoogleMap({ userLocation }) {
             if (!cancelled && currentRequest === requestId) {
               console.error("Kunne ikke hente stoppesteder:", fetchError);
             }
+          } finally {
+            finishRefresh();
           }
         }
 
-        refreshStopsRef.current = async () => {
-          setIsRefreshing(true);
-          try {
-            // Hold indikatoren synlig i mindst 600 ms, også ved hurtig datahentning.
-            await Promise.all([
-              updateStops(),
-              new Promise((resolve) => setTimeout(resolve, 600)),
-            ]);
-          } finally {
-            if (!cancelled) setIsRefreshing(false);
-          }
-        };
+        refreshStopsRef.current = updateStops;
 
         // tilpasser kortet automatisk, så alle favoritstoppesteder kan ses, selvom de ligger forskellige steder i Aarhus
 
@@ -528,19 +624,54 @@ export default function GoogleMap({ userLocation }) {
         aria-busy={isRefreshing}
         title="Opdater stoppesteder"
       >
-        <img
-          src={loadingBusIcon}
-          alt=""
-          className={isRefreshing ? styles.rotating : ""}
-        />
+        <span className={isRefreshing ? styles.rotating : ""}>
+          <LoadingBus />
+        </span>
       </button>
-      {selectedStop && (
+
+      {selectedStop && !shareOpen && (
         <StationModal
           key={selectedStop.stop_id}
           selectedStop={selectedStop}
-          onClose={() => setSelectedStop(null)}
+          selectedTrip={selectedTrip}
+          setSelectedTrip={setSelectedTrip}
+          onShare={() => setShareOpen(true)}
+          onRefresh={beginRefresh}
+          onClose={() => {
+            setSelectedTrip(null);
+            setSelectedStop(null);
+          }}
         />
       )}
+
+      {selectedStop && selectedTrip && shareOpen && (
+        <ShareModal
+          selectedTrip={selectedTrip}
+          selectedStop={selectedStop}
+          onBack={() => setShareOpen(false)}
+        />
+      )}
+
+      {shareError && (
+        <div className={styles.shareError} role="alert">
+          <h2>Kunne ikke åbne busafgangen</h2>
+          <p>{shareError}</p>
+          <button
+            type="button"
+            onClick={() => {
+              setShareError("");
+              window.history.replaceState(
+                window.history.state,
+                "",
+                window.location.pathname,
+              );
+            }}
+          >
+            Tilbage til kortet
+          </button>
+        </div>
+      )}
+
       {error && <p className={styles.error}>{error}</p>}
     </div>
   );

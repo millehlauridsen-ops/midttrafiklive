@@ -1,0 +1,200 @@
+.backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  background: var(--overlay__darken);
+}
+
+.modal {
+  position: absolute;
+  z-index: 10;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  width: calc(100% - 40px);
+  max-width: 360px;
+  padding: 12px 16px 24px;
+
+  background: var(--modal__background);
+  color: var(--text__primary);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px var(--effect__shadow-strong);
+}
+
+.modal h2,
+.modal p {
+  margin: 0;
+}
+
+.modal button {
+  min-height: 44px;
+  border: 1px solid var(--border__default);
+  border-radius: 12px;
+  background: var(--modal__background);
+  color: var(--text__primary);
+  cursor: pointer;
+}
+
+.modalHeader {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 44px;
+  margin-bottom: -10px;
+}
+
+.modal .backButton {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text__primary);
+  box-shadow: none;
+}
+
+.backIcon {
+  display: block;
+  width: 24px;
+  height: 24px;
+  background: currentColor;
+  -webkit-mask: url("../assets/chevron.svg") center / contain no-repeat;
+  mask: url("../assets/chevron.svg") center / contain no-repeat;
+  transform: rotate(180deg);
+}
+
+.modal .backButton:focus-visible,
+.modal .shareButton:focus-visible {
+  outline: 3px solid var(--accent__primary);
+  outline-offset: 2px;
+}
+
+.sharingIllustration {
+  display: block;
+  width: 100%;
+  max-width: 240px;
+  max-height: 180px;
+  object-fit: contain;
+  align-self: center;
+}
+
+.shareHeading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  text-align: center;
+}
+
+.shareKicker {
+  color: var(--accent__primary);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.modal h2 {
+  margin: 0;
+  color: var(--text__primary);
+  font-size: clamp(18px, 5.3vw, 22px);
+  font-weight: 850;
+  line-height: 1.2;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.modal .shareButton {
+  width: 100%;
+  min-height: 52px;
+  padding: 12px 20px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--accent__primary);
+  color: #ffffff;
+  font: inherit;
+  font-size: 17px;
+  font-weight: 800;
+  box-shadow: 0 4px 12px var(--effect__shadow);
+}
+
+.modal .shareButton:active {
+  transform: translateY(1px);
+}
+
+.busDetails {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.busDetails strong {
+  font-size: 22px;
+  color: var(--text__primary);
+}
+
+.busDetails span {
+  font-size: 16px;
+  color: var(--text__muted);
+}
+
+/* Habbo: pixelrammer og knapper inspireret af appens eksisterende tema. */
+:global(html[data-theme="habbo"]) .modal {
+  border: 3px solid var(--effect__pixel-ink);
+  border-radius: 3px;
+  box-shadow: 6px 6px 0 var(--effect__pixel-shadow);
+}
+
+:global(html[data-theme="habbo"]) .modal h2 {
+  text-shadow: 3px 3px 0 var(--effect__pixel-text-shadow);
+}
+
+:global(html[data-theme="habbo"]) .modal .shareButton {
+  padding: 10px 16px;
+  border: 3px solid var(--effect__pixel-ink);
+  border-radius: 2px;
+  font: inherit;
+  font-weight: 700;
+  background: var(--accent__primary);
+  color: #ffffff;
+  box-shadow:
+    inset 2px 2px 0 var(--effect__highlight),
+    inset 0 -3px 0 var(--effect__pixel-dark),
+    3px 3px 0 var(--effect__pixel-shadow);
+}
+
+:global(html[data-theme="habbo"]) .modal button:focus-visible {
+  outline: 3px solid var(--accent__primary);
+  outline-offset: 4px;
+}
+
+/* Tilbagepilen er uden knapramme i alle temaer, også Habbo. */
+:global(html[data-theme="habbo"]) .modal .backButton {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text__primary);
+  box-shadow: none;
+}
+
+/* Rave: kontrast på den pink primærknap og let neon-effekt. */
+:global(html[data-theme="rave"]) .modal .shareButton {
+  color: var(--background__app);
+  box-shadow: 0 0 18px var(--effect__shadow-strong), 0 0 12px var(--accent__primary);
+}
+

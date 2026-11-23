@@ -60,6 +60,14 @@
   background: var(--route__blue);
 }
 
+.lightRail {
+  color: #ffffff;
+}
+
+.lightRail .busArt::before {
+  background: #747879;
+}
+
 /* SVG'ens busfront vender mod venstre; linjenummeret spejles ikke. */
 .facingRight .busArt {
   transform: scaleX(-1);

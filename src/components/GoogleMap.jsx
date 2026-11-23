@@ -5,6 +5,7 @@ import { getFavorites } from "../services/favorites.js";
 import StationModal from "./StationModal.jsx";
 import ShareModal from "./ShareModal.jsx";
 import LoadingBus from "./LoadingBus.jsx";
+import LiveBuses from "./LiveBuses.jsx";
 import styles from "./GoogleMap.module.css";
 import busIcon from "../assets/busvektor.svg";
 import { getMapStyles } from "../themes/mapStyles.js";
@@ -79,11 +80,13 @@ export default function GoogleMap({ userLocation }) {
   const [shareError, setShareError] = useState("");
   const [selectedStop, setSelectedStop] = useState(null);
   const [selectedTrip, setSelectedTrip] = useState(null);
+  const busSelectionRequestRef = useRef(0);
   const [shareOpen, setShareOpen] = useState(false);
   const [favorites, setFavorites] = useState(getFavorites);
   const favoritesRef = useRef(favorites);
-  const [showAllStops, setShowAllStops] = useState(false);
-  const showAllStopsRef = useRef(false);
+  const [showAllStops, setShowAllStops] = useState(true);
+  const [busRefreshVersion, setBusRefreshVersion] = useState(0);
+  const showAllStopsRef = useRef(true);
 
   // Brug useLocation til at få adgang til den valgte stoppested fra SearchPage
   const location = useLocation();
@@ -193,8 +196,8 @@ export default function GoogleMap({ userLocation }) {
     }
 
     if (favorites.length === 0) {
-      showAllStopsRef.current = false;
-      setShowAllStops(false);
+      showAllStopsRef.current = true;
+      setShowAllStops(true);
       refreshStopsRef.current?.();
     }
   }, [favorites]);
@@ -474,11 +477,6 @@ export default function GoogleMap({ userLocation }) {
           map.fitBounds(bounds, 48);
         };
 
-        // Brug favoritternes placering ved første indlæsning
-        if (favoritesRef.current.length > 0) {
-          fitFavoritesRef.current();
-        }
-
         zoomListener = map.addListener("zoom_changed", () => {
           renderStops();
         });
@@ -561,6 +559,42 @@ export default function GoogleMap({ userLocation }) {
       map.set("hasCenteredOnUser", true);
     }
   }, [userLocation]);
+  async function handleSelectBus(bus) {
+    const requestId = ++busSelectionRequestRef.current;
+    try {
+      const stop = await getStopById(bus.stop_id);
+      if (requestId !== busSelectionRequestRef.current) return;
+      if (!stop) throw new Error("Stoppestedet findes ikke");
+
+      setSelectedStop(stop);
+      setSelectedTrip({
+        trip_id: bus.trip_id,
+        departure_at: bus.departure_at,
+        route_short_name: bus.route_short_name,
+        destination: bus.destination,
+      });
+      setShareOpen(false);
+    } catch (error) {
+      if (requestId === busSelectionRequestRef.current) {
+        console.error("Kunne ikke åbne den simulerede bus:", error);
+        setError("Kunne ikke åbne bussens rute.");
+      }
+    }
+  }
+
+  // Brug samme opdatering ved automatisk og manuel refresh.
+  const refreshMap = useCallback(() => {
+    refreshStopsRef.current?.();
+    setBusRefreshVersion((version) => version + 1);
+  }, []);
+
+  useEffect(() => {
+    if (!mapReady) return;
+
+    const interval = window.setInterval(refreshMap, 2500);
+    return () => window.clearInterval(interval);
+  }, [mapReady, refreshMap]);
+
   function handleToggleStops(showAll) {
     showAllStopsRef.current = showAll;
     setShowAllStops(showAll);
@@ -579,6 +613,13 @@ export default function GoogleMap({ userLocation }) {
   return (
     <div className={styles.mapContainer}>
       <div ref={mapRef} className={styles.map} />
+      {mapReady && (
+        <LiveBuses
+          map={googleMapRef.current}
+          onSelectBus={handleSelectBus}
+          refreshVersion={busRefreshVersion}
+        />
+      )}
 
       {favorites.length > 0 && (
         <div
@@ -618,11 +659,11 @@ export default function GoogleMap({ userLocation }) {
       <button
         type="button"
         className={styles.refreshButton}
-        onClick={() => refreshStopsRef.current?.()}
+        onClick={refreshMap}
         disabled={isRefreshing}
-        aria-label="Opdater stoppesteder"
+        aria-label="Opdater stoppesteder og buspositioner"
         aria-busy={isRefreshing}
-        title="Opdater stoppesteder"
+        title="Opdater stoppesteder og buspositioner"
       >
         <span className={isRefreshing ? styles.rotating : ""}>
           <LoadingBus />
@@ -638,6 +679,7 @@ export default function GoogleMap({ userLocation }) {
           onShare={() => setShareOpen(true)}
           onRefresh={beginRefresh}
           onClose={() => {
+            busSelectionRequestRef.current += 1;
             setSelectedTrip(null);
             setSelectedStop(null);
           }}

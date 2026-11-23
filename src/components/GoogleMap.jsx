@@ -596,7 +596,7 @@ export default function GoogleMap({ userLocation }) {
   useEffect(() => {
     if (!mapReady) return;
 
-    const interval = window.setInterval(refreshMap, 5000);
+    const interval = window.setInterval(refreshMap, 2500);
     return () => window.clearInterval(interval);
   }, [mapReady, refreshMap]);
 

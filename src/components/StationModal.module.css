@@ -76,6 +76,7 @@
 }
 
 .stationBusIcon {
+  position: relative;
   display: grid;
   place-items: center;
   flex-shrink: 0;
@@ -86,10 +87,17 @@
 }
 
 .stationBusIcon img {
+  display: none;
+}
+
+.stationBusIcon::after {
+  content: "";
+  display: block;
   width: 24px;
   height: 24px;
-  filter: invert(39%) sepia(8%) saturate(674%) hue-rotate(103deg)
-    brightness(92%) contrast(89%);
+  background: var(--icon__color);
+  -webkit-mask: url("../assets/busvektor.svg") center / contain no-repeat;
+  mask: url("../assets/busvektor.svg") center / contain no-repeat;
 }
 
 .stopDetails {
@@ -116,6 +124,7 @@
 }
 
 .favoriteIcon {
+  position: relative;
   display: grid;
   place-items: center;
   flex-shrink: 0;
@@ -130,9 +139,22 @@
 }
 
 .favoriteIcon img {
+  display: none;
+}
+
+.favoriteIcon::after {
+  content: "";
+  display: block;
   width: 24px;
   height: 24px;
-  display: block;
+  background: var(--icon__color);
+  -webkit-mask: url("../assets/star.svg") center / contain no-repeat;
+  mask: url("../assets/star.svg") center / contain no-repeat;
+}
+
+.shareAction::after {
+  -webkit-mask-image: url("../assets/share.svg");
+  mask-image: url("../assets/share.svg");
 }
 
 .favoriteActive {
@@ -140,9 +162,8 @@
   border-color: var(--favorite__active-border);
 }
 
-.favoriteActive img {
-  filter: brightness(0) saturate(100%) invert(75%) sepia(72%) saturate(970%)
-    hue-rotate(352deg);
+.favoriteActive::after {
+  background: var(--icon__active);
 }
 
 /* Afgangslisten scroller, mens headeren bliver stående */
@@ -231,25 +252,6 @@
   border-radius: 2px;
 }
 
-/* Habbo: bus-SVG farves med temaets ikonfarve. */
-:global(html[data-theme="habbo"]) .stationBusIcon {
-  position: relative;
-}
-
-:global(html[data-theme="habbo"]) .stationBusIcon img {
-  visibility: hidden;
-}
-
-:global(html[data-theme="habbo"]) .stationBusIcon::after {
-  content: "";
-  position: absolute;
-  width: 24px;
-  height: 24px;
-  background: var(--icon__color);
-  -webkit-mask: url("../assets/busvektor.svg") center / contain no-repeat;
-  mask: url("../assets/busvektor.svg") center / contain no-repeat;
-}
-
 .headerBackButton {
   display: grid;
   place-items: center;
@@ -263,7 +265,20 @@
 }
 
 .headerBackButton img {
+  display: none;
+}
+
+.headerBackButton::after {
+  content: "";
+  display: block;
   width: 24px;
   height: 24px;
+  background: var(--text__primary);
+  -webkit-mask: url("../assets/chevron.svg") center / contain no-repeat;
+  mask: url("../assets/chevron.svg") center / contain no-repeat;
   transform: rotate(180deg);
+}
+
+:global(html[data-theme="habbo"]) .favoriteActive::after {
+  background: var(--icon__color);
 }

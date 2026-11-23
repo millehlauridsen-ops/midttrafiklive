@@ -18,6 +18,7 @@ export default function StationModal({
   selectedStop,
   selectedTrip,
   setSelectedTrip,
+  onShare,
   onClose,
 }) {
   const tripListRef = useRef(null);
@@ -195,7 +196,7 @@ export default function StationModal({
               type="button"
               className={styles.favoriteIcon}
               aria-label="Del busafgang"
-              onClick={() => {}}
+              onClick={onShare}
             >
               <img src={shareIcon} alt="" />
             </button>

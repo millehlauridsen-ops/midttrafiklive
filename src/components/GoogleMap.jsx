@@ -3,6 +3,7 @@ import { setOptions, importLibrary } from "@googlemaps/js-api-loader";
 import { getStops } from "../services/stops.js";
 import { getFavorites } from "../services/favorites.js";
 import StationModal from "./StationModal.jsx";
+import ShareModal from "./ShareModal.jsx";
 import loadingBusIcon from "../assets/loadingmbus.svg";
 import styles from "./GoogleMap.module.css";
 import busIcon from "../assets/busvektor.svg";
@@ -60,6 +61,7 @@ export default function GoogleMap({ userLocation }) {
   const [error, setError] = useState("");
   const [selectedStop, setSelectedStop] = useState(null);
   const [selectedTrip, setSelectedTrip] = useState(null);
+  const [shareOpen, setShareOpen] = useState(false);
   const [favorites, setFavorites] = useState(getFavorites);
   const favoritesRef = useRef(favorites);
   const [showAllStops, setShowAllStops] = useState(false);
@@ -238,7 +240,11 @@ export default function GoogleMap({ userLocation }) {
                 stop.stop_name,
               );
 
-              const selectStop = () => setSelectedStop(stop);
+              const selectStop = () => {
+                setSelectedTrip(null);
+                setShareOpen(false);
+                setSelectedStop(stop);
+              };
               marker.element.addEventListener("click", selectStop);
               marker.element.setAttribute("role", "button");
               marker.element.setAttribute("tabindex", "0");
@@ -535,15 +541,28 @@ export default function GoogleMap({ userLocation }) {
           className={isRefreshing ? styles.rotating : ""}
         />
       </button>
-      {selectedStop && (
+
+      {selectedStop && !shareOpen && (
         <StationModal
           key={selectedStop.stop_id}
           selectedStop={selectedStop}
           selectedTrip={selectedTrip}
           setSelectedTrip={setSelectedTrip}
-          onClose={() => setSelectedStop(null)}
+          onShare={() => setShareOpen(true)}
+          onClose={() => {
+            setSelectedTrip(null);
+            setSelectedStop(null);
+          }}
         />
       )}
+
+      {selectedStop && selectedTrip && shareOpen && (
+        <ShareModal
+          selectedTrip={selectedTrip}
+          onBack={() => setShareOpen(false)}
+        />
+      )}
+
       {error && <p className={styles.error}>{error}</p>}
     </div>
   );

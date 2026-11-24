@@ -235,6 +235,19 @@ export default function GoogleMap({ userLocation, onGroupsChange }) {
           styles: getMapStyles(),
         });
 
+        // Skalér busser og tema-avatarer i takt med kortets zoom.
+        // En nedre grænse holder markørerne synlige og klikbare langt ude.
+        function updateMarkerScale() {
+          const zoom = map.getZoom() ?? 15;
+          const scale = Math.max(0.35, Math.min(1, 2 ** (zoom - 15)));
+          mapRef.current?.parentElement?.style.setProperty(
+            "--map-marker-scale",
+            String(scale),
+          );
+        }
+
+        updateMarkerScale();
+
         class MapMarker extends OverlayView {
           constructor(position, className, title = "") {
             super();
@@ -482,6 +495,7 @@ export default function GoogleMap({ userLocation, onGroupsChange }) {
         };
 
         zoomListener = map.addListener("zoom_changed", () => {
+          updateMarkerScale();
           renderStops();
         });
         idleListener = map.addListener("idle", () => {

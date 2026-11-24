@@ -331,7 +331,8 @@
   background: none;
   box-shadow: none;
   filter: none;
-  transform: translate(-50%, -100%);
+  transform: translate(-50%, -100%) scale(var(--map-marker-scale, 1));
+  transform-origin: center bottom;
   isolation: isolate;
 }
 

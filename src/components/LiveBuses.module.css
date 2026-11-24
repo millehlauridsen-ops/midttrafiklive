@@ -8,7 +8,7 @@
   background: transparent;
   color: var(--route__onyellow);
   cursor: pointer;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(var(--map-marker-scale, 1));
 }
 
 .busArt {
